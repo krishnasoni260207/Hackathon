@@ -1,0 +1,8 @@
+streamlit>=1.49,<2
+python-dotenv>=1.1,<2
+httpx>=0.28,<1
+websockets>=15,<16
+openai>=2,<3
+deepgram-sdk>=4,<5
+livekit-agents[deepgram,openai,rime]==1.7.1
+pytest>=8.4,<9
