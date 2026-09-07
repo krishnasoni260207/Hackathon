@@ -13,9 +13,11 @@ Phase 1 sets up the project structure, dependencies, environment placeholders, d
 Implemented:
 
 - Project folders and Python packages.
-- Streamlit UI with example study conversation.
+- Voice-bot styled Streamlit UI with example study conversation.
 - Placeholder status and voice controls.
-- Future service status area for Speech-to-Text, LLM, Rime TTS, and LiveKit.
+- Voice input panel for typed text or recorded audio.
+- Mock backend output for Speech-to-Text, LLM, and Rime TTS.
+- Real API hooks for OpenAI LLM/STT and Rime TTS when configured.
 - Basic tests for current placeholder state.
 
 Not implemented:
@@ -46,12 +48,25 @@ python -m pip install -r requirements.txt
 
 ## Run Streamlit
 
+From the project root:
+
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-No API keys are required for Phase 1.
+### Voice UI flow
+
+1. Click **Start session** to initialize the voice agent.
+2. Click **Record** to capture microphone audio.
+3. Click **Submit recording** to stop capture and run STT → LLM → TTS automatically.
+4. Listen to the generated speech in the Output panel (autoplay enabled).
+5. Click **Record** again for another turn, or **End session** when finished.
+
+Typed questions are available under **Type a question instead**.
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` if needed and fill in real values during later phases. Keep `.env` local.
+Copy `.env.example` to `.env` if needed and fill in real values. Keep `.env` local.
+
+`BACKEND_MODE=mock` runs without network calls and returns predictable test output with silent WAV audio.
+`BACKEND_MODE=real` calls OpenAI for STT/LLM and Rime for human-like TTS. Requires `OPENAI_API_KEY` and `RIME_API_KEY`.

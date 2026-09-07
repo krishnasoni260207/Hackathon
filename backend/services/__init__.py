@@ -1,1 +1,1 @@
-"""Service placeholders for future provider integrations."""
+"""Service modules for STT, LLM, and Rime TTS."""

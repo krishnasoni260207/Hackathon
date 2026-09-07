@@ -1,1 +1,1 @@
-"""Streamlit application package for the study assistant."""
+"""Streamlit voice assistant application."""

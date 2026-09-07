@@ -1,3 +1,8 @@
+"""Conversation panel — displays the chat history.
+
+Shows example messages only when the user hasn't started a real conversation.
+Once there are real messages, only real messages are shown.
+"""
 from __future__ import annotations
 
 import streamlit as st
@@ -17,34 +22,30 @@ EXAMPLE_MESSAGES = [
             "different sex cells, which helps explain variation in offspring."
         ),
     },
-    {
-        "speaker": "Student",
-        "role": "user",
-        "text": "Make that simpler, like I am reviewing before an exam.",
-    },
-    {
-        "speaker": "AI Assistant",
-        "role": "assistant",
-        "text": (
-            "Quick version: mitosis is for growth and repair. Meiosis is for reproduction."
-        ),
-    },
 ]
 
 
-def render_conversation_panel() -> None:
+def render_conversation_panel(messages: list[dict] | None = None) -> None:
+    """Render the conversation history panel.
+
+    Shows example messages when the conversation is empty,
+    otherwise shows only real messages.
+    """
+    real_messages = messages or []
+    show_messages = real_messages if real_messages else EXAMPLE_MESSAGES
+
     with st.container(border=True):
-        st.subheader("Study Conversation")
-        st.caption("Example messages only. No LLM is connected in Phase 1.")
+        st.subheader("Conversation", icon=":material/forum:")
 
-        for message in EXAMPLE_MESSAGES:
-            with st.chat_message(message["role"]):
-                st.markdown(f"**{message['speaker']}**")
-                st.write(message["text"])
+        if not real_messages:
+            st.caption("Example conversation — start a session and ask a question!")
 
-        st.text_input(
-            "Study question",
-            placeholder="Conversation input will be connected in a later phase",
-            disabled=True,
-            label_visibility="collapsed",
-        )
+        for msg in show_messages:
+            avatar = (
+                ":material/person:"
+                if msg["role"] == "user"
+                else ":material/smart_toy:"
+            )
+            with st.chat_message(msg["role"], avatar=avatar):
+                st.markdown(f"**{msg['speaker']}**")
+                st.write(msg["text"])

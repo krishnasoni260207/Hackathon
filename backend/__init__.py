@@ -1,1 +1,1 @@
-"""Backend package for future voice, conversation, and metrics services."""
+"""Backend package for voice assistant services."""

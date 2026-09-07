@@ -1,27 +1,13 @@
-from __future__ import annotations
-
-import json
-
+"""Backend entry point and health check."""
 
 PROJECT_NAME = "Interruptible Study Assistant"
-PHASE = "Phase 1"
 
 
-def get_phase_status() -> dict[str, object]:
-    return {
-        "project": PROJECT_NAME,
-        "phase": PHASE,
-        "implemented": ["project structure", "Streamlit UI shell"],
-        "not_implemented": [
-            "realtime STT",
-            "LLM calls",
-            "Rime TTS calls",
-            "LiveKit connection",
-            "audio playback",
-            "interruption and recovery logic",
-        ],
-    }
+def health_check() -> dict:
+    """Return basic project health info."""
+    return {"project": PROJECT_NAME, "status": "ok"}
 
 
 if __name__ == "__main__":
-    print(json.dumps(get_phase_status(), indent=2))
+    import json
+    print(json.dumps(health_check(), indent=2))

@@ -6,7 +6,7 @@ from typing import Literal
 
 
 Speaker = Literal["student", "assistant"]
-VoiceStatus = Literal["ready", "listening", "thinking", "speaking"]
+VoiceStatus = Literal["ready", "listening", "thinking", "speaking", "interrupted", "recovering"]
 
 
 @dataclass(frozen=True)
