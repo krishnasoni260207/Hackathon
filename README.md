@@ -8,7 +8,7 @@ The assistant uses speech recognition, an LLM, and Rime TTS to create a complete
 
 ---
 
-## 1. Problem
+ ## 1. Problem
 
 Traditional AI study assistants often behave like a request-and-response system:
 
@@ -177,17 +177,20 @@ Speech-to-Text
 Deepgram is used to convert recorded user audio into text.
 
 Implementation:
+
 backend/services/stt.py
 LLM
 The LLM generates the study assistant response.
 
 Implementation:
+
 backend/services/llm.py
 The application uses OpenRouter when running in real mode.
 Rime TTS
 Rime converts the assistant's generated response into speech.
 
 Implementation:
+
 backend/services/rime_tts.py
 Rime is the primary text-to-speech provider in the intended demo flow.
 Interruption Controller
@@ -200,13 +203,13 @@ It is responsible for tracking which request is currently authoritative.
 When a new request begins, an older request must no longer be allowed to produce active user-facing speech.
 
 Playback
+
 Audio playback state is managed by:
 backend/audio/playback.py
 Browser-side recording and playback behavior is implemented through:
 app/ui/voice_recorder.py
 Conversation State
 Conversation state and history are managed through:
-
 backend/conversation/state.py
 backend/conversation/manager.py
 
@@ -267,53 +270,49 @@ Request B
 Request B completes
 
 Request A might still finish in the background.
-
 The application must not allow Request A to become the active spoken response after Request B has taken over.
-
 Therefore, the application checks request state before allowing results to proceed to user-facing playback.
-
 The intended behavior is:
-
 Old request = stale
 New request = authoritative
 
 9. Third-Party Services
+
 Service	Purpose	Used By
-Rime	Text-to-speech	backend/services/rime_tts.py
-Deepgram	Speech-to-text	backend/services/stt.py
-OpenRouter	LLM inference	backend/services/llm.py
+Rime	    Text-to-speech	    backend/services/rime_tts.py
+Deepgram	Speech-to-text	    backend/services/stt.py
+OpenRouter	LLM inference	    backend/services/llm.py
 
 These services are accessed through their respective application service modules.
-
 API credentials are supplied through environment variables and are not stored in the source code.
 
 10. Rime TTS Configuration
-Rime is the primary TTS provider for the voice experience.
 
+Rime is the primary TTS provider for the voice experience.
 The application sends text to the Rime TTS API and receives audio for playback.
 
 Exact Rime Configuration
-Setting	Value
-Provider	Rime
-Model ID	coda
-Speaker	celeste
-Language	Configured through RIME_LANG
-Endpoint	https://users.rime.ai/v1/rime-tts
-Audio format	WAV
-Transport	HTTP REST API
-Rime Implementation
 
+Setting 	    Value
+Provider	    Rime
+Model ID	    coda
+Speaker	        celeste
+Language	    Configured through RIME_LANG
+Endpoint	    https://users.rime.ai/v1/rime-tts
+Audio format	WAV
+Transport	    HTTP REST API
+
+Rime Implementation
 Rime integration is implemented in:
 
 backend/services/rime_tts.py
 
 The service sends the generated assistant response to the Rime TTS endpoint and receives audio data for playback.
-
 The Rime model and speaker are configured through environment variables with the project defaults.
 
 11. Environment Variables
-Create a .env file based on .env.example.
 
+Create a .env file based on .env.example.
 Example:
 
 RIME_API_KEY=your_rime_key
@@ -326,10 +325,9 @@ DEEPGRAM_API_KEY=your_deepgram_key
 OPENROUTER_API_KEY=your_openrouter_key
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 LLM_MODEL=openai/gpt-4o-mini
+
 Important
-
 Never commit real API keys.
-
 The repository should contain:
 
 .env.example
@@ -341,24 +339,21 @@ with placeholder values, but the real:
 must remain private.
 
 12. Setup Instructions
+
 Requirements
-
 The project uses Python and a virtual environment.
-
 Python version used during development:
-
 Python 3.13.5
+
 Step 1: Clone the repository
 git clone <repository-url>
 cd rime-interruptible-study-assistant
 
 Step 2: Create a virtual environment
 Windows:
-
 python -m venv .venv
 
 Activate it:
-
 .venv\Scripts\Activate.ps1
 
 Step 3: Install dependencies
@@ -366,11 +361,8 @@ python -m pip install -r requirements.txt
 
 Step 4: Configure environment variables
 Copy:
-
 .env.example
-
 to:
-
 .env
 
 Then add your own API credentials.
@@ -385,7 +377,6 @@ Do not commit .env.
 
 13. Run the Application
 Start the Streamlit application with:
-
 python -m streamlit run app/streamlit_app.py
 
 Streamlit will provide a local browser address.
@@ -393,7 +384,6 @@ Open the displayed address in your browser and allow microphone access when requ
 
 14. Mock Mode
 The project supports mock/fallback behavior when real API configuration is not available.
-
 Mock mode is useful for:
 
 local development,
@@ -404,7 +394,6 @@ The intended voice demonstration uses the real Rime TTS path.
 
 15. Testing
 Run the complete automated test suite with:
-
 python -m pytest -q
 
 The test suite covers areas including:
@@ -424,7 +413,6 @@ tests/test_conversation_state.py
 tests/test_streamlit_app.py
 
 16. Voice Acceptance Tests
-
 Test 1 — Normal Voice Flow
 
 Start the application.
@@ -435,7 +423,6 @@ Verify that Rime generates speech.
 Verify that the answer is played in the browser.
 
 Expected result:
-
 User speech
 → STT
 → LLM
@@ -443,7 +430,6 @@ User speech
 → Audio playback
 
 Test 2 — Interruption
-
 Ask a question.
 Allow the assistant to begin speaking.
 Start speaking while the assistant is speaking.
@@ -452,7 +438,6 @@ Verify that the new request is processed.
 Verify that the new response is spoken.
 
 Expected result:
-
 Old response stops
         ↓
 New request becomes active
@@ -460,7 +445,6 @@ New request becomes active
 New response is spoken
 
 Test 3 — Stale Response
-
 Start a request that produces a long response.
 Interrupt it before it finishes.
 Ask a different question.
@@ -471,8 +455,8 @@ Expected result:
 Only the current request is allowed to produce active user-facing speech.
 
 17. Failure Behavior
-The application depends on multiple external services, so failures can occur at different stages.
 
+The application depends on multiple external services, so failures can occur at different stages.
 Microphone / Audio Failure
 
 If browser microphone access is unavailable, the voice input cannot be recorded.
@@ -502,7 +486,6 @@ If browser audio playback fails, the response may be generated successfully but 
 The playback state is managed separately from response generation.
 
 User Interruption
-
 When the user interrupts the assistant:
 
 Current playback is stopped.
@@ -516,6 +499,7 @@ A previous request may still finish processing after the user has interrupted it
 Those results must not become the active spoken response after a newer request has taken control.
 
 18. Known Limitations
+
 The current application has several practical limitations:
 
 Voice interaction depends on browser microphone permissions.
@@ -527,16 +511,15 @@ Mock mode does not represent the full real-world Rime voice experience.
 The application is designed primarily as a hackathon demonstration rather than a production-scale multi-user deployment.
 
 19. Failure and Recovery Philosophy
+
 The application treats an interruption as a change in conversational authority.
 
 The important rule is:
-
 Newest valid request
         >
 Older interrupted request
 
 The system therefore attempts to maintain consistency between:
-
 what the user requested,
 what the application considers active,
 what the user actually heard.
@@ -545,15 +528,14 @@ This is important because simply stopping browser playback is not enough.
 If an old model or TTS request finishes later, its result must not be allowed to resume as if it were still current.
 
 20. Evidence and Reproducibility
+
 The repository contains automated tests and evidence files related to interruption and latency.
 
 Relevant locations include:
-
 tests/
 evidence/
 
 Evidence files include:
-
 evidence/interruption_results.csv
 evidence/latency_results.csv
 
@@ -630,16 +612,17 @@ rime-interruptible-study-assistant/
 
 22. Technology Stack
 
-Technology	Purpose
-Python	Application/backend logic
-Streamlit	User interface
-Deepgram	Speech-to-text
-OpenRouter	LLM inference
-Rime	Text-to-speech
-HTTPX	HTTP API communication
-pytest	Automated testing
+Technology	   Purpose
+Python	       Application/backend logic
+Streamlit	   User interface
+Deepgram	   Speech-to-text
+OpenRouter	   LLM inference
+Rime	       Text-to-speech
+HTTPX	       HTTP API communication
+pytest	       Automated testing
 
 23. Why Rime Is Important to This Project
+
 Rime is not included as an incidental integration.
 Rime is part of the primary voice pipeline:
 
@@ -657,8 +640,8 @@ The application's voice experience depends on generating and playing synthesized
 The interruption challenge is especially important because stopping playback is only one part of the problem. The application must also ensure that an obsolete Rime response cannot become active after the user has moved on to a new request.
 
 24. Demo Scenario
-A recommended demonstration flow is:
 
+A recommended demonstration flow is:
 Step 1
 User asks:
 "Explain photosynthesis."
@@ -693,6 +676,7 @@ Only the new answer is spoken.
 This demonstrates the core engineering challenge of the project.
 
 25. Security
+
 API credentials must never be committed to the repository.
 Use:
 .env
@@ -702,13 +686,11 @@ Use:
 for safe placeholder configuration.
 
 Example:
-
 RIME_API_KEY=your_rime_key
 DEEPGRAM_API_KEY=your_deepgram_key
 OPENROUTER_API_KEY=your_openrouter_key
 
 Never put real API keys in:
-
 README.md
 source code
 GitHub commits
@@ -717,18 +699,25 @@ documentation
 test fixtures
 
 26. Limitations and Future Improvements
-Possible future improvements include:
 
+Possible future improvements include:
 lower interruption latency,
+
 more sophisticated voice activity detection,
+
 improved streaming TTS,
+
 stronger cancellation of background work,
+
 production-grade multi-user session management,
+
 improved browser audio handling,
+
 more extensive automated end-to-end voice testing.
 These are future improvements and are not claims about functionality that is currently implemented.
 
 27. Hackathon Requirements Checklist
+
 This README explicitly documents the required project information.
 
 General README Requirements
@@ -737,6 +726,7 @@ General README Requirements
  Third-party services
  Known limitations
  Failure behavior
+
 Exact Rime Configuration
  Rime model ID
  Rime speaker
@@ -744,11 +734,13 @@ Exact Rime Configuration
  Rime endpoint
  Rime audio format
  Rime transport
+
 Security
  No API keys included in README
  Environment variables documented
  .env should remain private
  .env.example uses placeholders
+
 Voice Engineering
  Normal voice flow documented
  Interruption flow documented
@@ -757,13 +749,14 @@ Voice Engineering
  Recovery behavior documented
 
 28. Quick Start
-For a quick local run:
 
+For a quick local run:
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 Configure .env,
- then run:
+
+then run:
 python -m streamlit run app/streamlit_app.py
 
 Run tests:
