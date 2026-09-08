@@ -890,4 +890,6 @@ python -m pytest -q
 
 ## License
 
-This project was created as part of a Rime voice AI hackathon submission.
+This project was created as a submission for a Rime voice AI hackathon.
+
+One important thing: no formal open-source license has been applied to this repository. That means the default "all rights reserved" rule applies — others are not automatically permitted to copy, modify, or redistribute this code. If you intend for this project to be reused or built on beyond the hackathon, add an explicit license file (for example, MIT or Apache 2.0) before sharing the repository publicly.
